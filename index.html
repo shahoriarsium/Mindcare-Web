@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MindCare Center — Mental Health Consultation</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <section class="hero">
+    <div class="container">
+      <h1>You deserve to feel better</h1>
+      <p>Professional psychiatric consultations for depression, anxiety, and insomnia. Book a session with our experienced specialists today.</p>
+      <div class="hero-actions">
+        <a href="consultants.html" class="btn btn-lg btn-primary">Find a Consultant</a>
+        <a href="#how-it-works" class="btn btn-lg btn-outline">How It Works</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="how-it-works">
+    <div class="container">
+      <h2 class="section-title">How It Works</h2>
+      <p class="section-subtitle">Getting the support you need is simple — browse, book, and connect with a specialist.</p>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">🔍</div>
+          <h3>Choose a Specialist</h3>
+          <p>Browse our team of psychiatrists and find the right expert for your needs.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">📅</div>
+          <h3>Book a Session</h3>
+          <p>Select a convenient date and time that fits your schedule.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💬</div>
+          <h3>Start Your Journey</h3>
+          <p>Meet with your consultant and begin your path toward better mental health.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" style="background: var(--color-surface);">
+    <div class="container">
+      <h2 class="section-title">Our Specialists</h2>
+      <p class="section-subtitle">Experienced psychiatrists dedicated to helping you with depression, anxiety, and sleep issues.</p>
+      <div class="cards-grid" id="home-consultants"></div>
+      <div style="text-align: center; margin-top: 2rem;">
+        <a href="consultants.html" class="btn btn-outline">View All Consultants</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2 class="section-title">Conditions We Support</h2>
+      <p class="section-subtitle">Our consultants specialize in the most common mental health challenges.</p>
+      <div class="features-grid">
+        <div class="feature">
+          <div class="feature-icon">🌧️</div>
+          <h3>Depression</h3>
+          <p>Persistent sadness, loss of interest, and fatigue — we help you find light again.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">💭</div>
+          <h3>Anxiety</h3>
+          <p>Overwhelming worry, panic, and restlessness — learn tools to manage anxious thoughts.</p>
+        </div>
+        <div class="feature">
+          <div class="feature-icon">🌙</div>
+          <h3>Insomnia</h3>
+          <p>Trouble falling or staying asleep — restore healthy sleep patterns naturally.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    initPage('home');
+
+    const consultantPages = {
+      'dr-sarah-chen': 'consultant-sarah.html',
+      'dr-michael-rivera': 'consultant-michael.html',
+      'dr-emily-watson': 'consultant-emily.html'
+    };
+
+    document.getElementById('home-consultants').innerHTML = CONSULTANTS.map(c => `
+      <div class="card">
+        <img src="${c.image}" alt="${c.name}" class="card-img">
+        <div class="card-body">
+          <span class="card-tag">${c.specialty}</span>
+          <h3>${c.name}</h3>
+          <p class="card-title-sub">${c.title}</p>
+          <p>${c.bio.substring(0, 100)}...</p>
+          <div class="card-footer">
+            <div class="price">${formatPrice(c.price)} <span>/ session</span></div>
+            <a href="${consultantPages[c.id]}" class="btn btn-primary">View Profile</a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  </script>
+</body>
+</html>

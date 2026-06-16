@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Payment — MindCare Center</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Payment</h1>
+      <p>Complete your booking with a secure payment.</p>
+    </div>
+  </div>
+
+  <section class="payment-page">
+    <div class="container" id="payment-content"></div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    initPage('cart');
+
+    const cart = getCart();
+    const checkout = JSON.parse(sessionStorage.getItem('mindcare_checkout') || 'null');
+    const container = document.getElementById('payment-content');
+
+    if (cart.length === 0 || !checkout) {
+      window.location.href = cart.length === 0 ? 'cart.html' : 'checkout.html';
+    } else {
+      const total = getCartTotal();
+      const orderId = 'MC-' + Date.now().toString(36).toUpperCase();
+
+      container.innerHTML = `
+        <div class="demo-notice">
+          <strong>Demo Payment Gateway</strong> — This is a simulated checkout for demonstration. No real charges will be made. For production, integrate Stripe, PayPal, or your preferred payment provider.
+        </div>
+
+        <div class="payment-grid">
+          <form class="payment-form" id="payment-form">
+            <h2>Payment Details</h2>
+            <p>Pay securely for your consultation session${cart.length > 1 ? 's' : ''}.</p>
+
+            <div class="payment-methods">
+              <div class="payment-method active" data-method="card">💳 Credit Card</div>
+              <div class="payment-method" data-method="paypal">🅿️ PayPal</div>
+            </div>
+
+            <div id="card-fields">
+              <div class="form-group">
+                <label for="card-name">Name on Card</label>
+                <input type="text" id="card-name" required placeholder="John Doe">
+              </div>
+              <div class="form-group card-input-group">
+                <label for="card-number">Card Number</label>
+                <input type="text" id="card-number" required placeholder="4242 4242 4242 4242" maxlength="19">
+                <div class="card-icons">VISA MC</div>
+              </div>
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="card-expiry">Expiry Date</label>
+                  <input type="text" id="card-expiry" required placeholder="MM/YY" maxlength="5">
+                </div>
+                <div class="form-group">
+                  <label for="card-cvc">CVC</label>
+                  <input type="text" id="card-cvc" required placeholder="123" maxlength="4">
+                </div>
+              </div>
+            </div>
+
+            <div id="paypal-fields" hidden>
+              <p style="color: var(--color-text-muted); font-size: 0.9rem; padding: 1rem; background: var(--color-primary-light); border-radius: 8px;">
+                You will be redirected to PayPal to complete your payment securely.
+              </p>
+            </div>
+
+            <div class="secure-badge">
+              🔒 256-bit SSL encrypted · PCI compliant
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-block btn-lg" style="margin-top: 1.5rem;">
+              Pay ${formatPrice(total)}
+            </button>
+          </form>
+
+          <div class="payment-summary">
+            <h3>Order Details</h3>
+            <p style="font-size: 0.85rem; color: var(--color-text-muted); margin-bottom: 1rem;">Order #${orderId}</p>
+            <p style="font-size: 0.9rem; margin-bottom: 1rem;"><strong>${checkout.firstName} ${checkout.lastName}</strong><br>${checkout.email}</p>
+            ${cart.map(item => `
+              <div class="summary-item">
+                <span>${item.consultantName}<br><small style="color: var(--color-text-muted);">${item.date} · ${item.time}</small></span>
+                <span>${formatPrice(item.price)}</span>
+              </div>
+            `).join('')}
+            <div class="summary-row total" style="margin-top: 1rem;">
+              <span>Total Due</span>
+              <span>${formatPrice(total)}</span>
+            </div>
+          </div>
+        </div>
+      `;
+
+      document.querySelectorAll('.payment-method').forEach(el => {
+        el.addEventListener('click', () => {
+          document.querySelectorAll('.payment-method').forEach(m => m.classList.remove('active'));
+          el.classList.add('active');
+          const method = el.dataset.method;
+          document.getElementById('card-fields').hidden = method !== 'card';
+          document.getElementById('paypal-fields').hidden = method !== 'paypal';
+        });
+      });
+
+      document.getElementById('card-number').addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\D/g, '').substring(0, 16);
+        e.target.value = val.replace(/(.{4})/g, '$1 ').trim();
+      });
+
+      document.getElementById('card-expiry').addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\D/g, '').substring(0, 4);
+        if (val.length >= 2) val = val.substring(0, 2) + '/' + val.substring(2);
+        e.target.value = val;
+      });
+
+      document.getElementById('payment-form').addEventListener('submit', function(e) {
+        e.preventDefault();
+        const btn = e.target.querySelector('button[type="submit"]');
+        btn.textContent = 'Processing...';
+        btn.disabled = true;
+
+        setTimeout(() => {
+          clearCart();
+          sessionStorage.removeItem('mindcare_checkout');
+          container.innerHTML = `
+            <div class="payment-success">
+              <div class="success-icon">✓</div>
+              <h2>Payment Successful!</h2>
+              <p>Thank you, ${checkout.firstName}! Your consultation${cart.length > 1 ? 's have' : ' has'} been booked. A confirmation email will be sent to <strong>${checkout.email}</strong>.</p>
+              <p style="font-size: 0.85rem; color: var(--color-text-muted);">Order #${orderId}</p>
+              <a href="index.html" class="btn btn-primary">Return to Home</a>
+              <a href="consultants.html" class="btn btn-outline" style="margin-left: 0.5rem;">Book Another Session</a>
+            </div>
+          `;
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Consultants — MindCare Center</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div id="site-header"></div>
+
+  <div class="page-header">
+    <div class="container">
+      <h1>Our Consultants</h1>
+      <p>Meet our team of experienced psychiatrists ready to support your mental health journey.</p>
+    </div>
+  </div>
+
+  <section class="section">
+    <div class="container">
+      <div class="cards-grid" id="consultants-list"></div>
+    </div>
+  </section>
+
+  <div id="site-footer"></div>
+
+  <script src="js/data.js"></script>
+  <script src="js/cart.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    initPage('consultants');
+
+    const consultantPages = {
+      'dr-sarah-chen': 'consultant-sarah.html',
+      'dr-michael-rivera': 'consultant-michael.html',
+      'dr-emily-watson': 'consultant-emily.html'
+    };
+
+    document.getElementById('consultants-list').innerHTML = CONSULTANTS.map(c => `
+      <div class="card">
+        <img src="${c.image}" alt="${c.name}" class="card-img">
+        <div class="card-body">
+          <span class="card-tag">${c.specialty}</span>
+          <h3>${c.name}</h3>
+          <p class="card-title-sub">${c.title}</p>
+          <p>${c.bio.substring(0, 120)}...</p>
+          <div class="card-footer">
+            <div class="price">${formatPrice(c.price)} <span>/ ${c.duration}</span></div>
+            <a href="${consultantPages[c.id]}" class="btn btn-primary">Book Now</a>
+          </div>
+        </div>
+      </div>
+    `).join('');
+  </script>
+</body>
+</html>
